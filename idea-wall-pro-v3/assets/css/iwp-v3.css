@@ -1,0 +1,71 @@
+/* Minimal, responsive, three styles + inline editor focus */
+:root{
+  --iwp-bg:#f6f7fb; --iwp-bg-dark:#0b0f14;
+  --iwp-card:#ffffff; --iwp-card-dark:#111827;
+  --iwp-text:#0b1220; --iwp-text-dark:#e5e7eb;
+  --iwp-accent:#2563eb; --iwp-border:#e5e7eb;
+}
+.iwp-theme-auto{ color-scheme: light dark; }
+.iwp-theme-light{ color-scheme: light; }
+.iwp-theme-dark{ color-scheme: dark; }
+
+.iwp-root{ font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; width:100%; }
+.iwp-toolbar{
+  position: absolute; right:12px; top:12px; z-index:20;
+  display:flex; gap:.35rem; align-items:center;
+  background: rgba(255,255,255,.6);
+  border:1px solid rgba(0,0,0,.06);
+  backdrop-filter: blur(10px);
+  border-radius: 12px; padding:.35rem .45rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+}
+.iwp-theme-dark .iwp-toolbar{ background: rgba(17,24,39,.6); border-color:#1f2937; color:#e5e7eb; }
+.iwp-btn{ border:0; padding:.45rem .55rem; border-radius:10px; cursor:pointer; background:#fff; border:1px solid rgba(0,0,0,.06); }
+.iwp-theme-dark .iwp-btn{ background:#0f172a; color:#e5e7eb; border-color:#1f2937; }
+.iwp-select, .iwp-color{ border:1px solid rgba(0,0,0,.06); border-radius:8px; padding:.3rem .4rem; background:#fff; }
+.iwp-theme-dark .iwp-select{ background:#0f172a; color:#e5e7eb; border-color:#1f2937; }
+
+.iwp-canvas{
+  position: relative; overflow:hidden; border:1px dashed #cfd8dc; border-radius:14px; margin-top:52px;
+  background-position:center; background-size:cover;
+}
+.iwp-stage{
+  position: relative; transform-origin: 0 0; /* for pan/zoom */ width: var(--iwp-w, 1600px); height: var(--iwp-h, 1000px);
+}
+
+.iwp-note{
+  position:absolute; min-width: 120px; min-height: 64px; user-select:none;
+  padding: 10px 12px; border-radius: 12px; box-shadow: 0 10px 28px rgba(0,0,0,.12);
+  border:1px solid rgba(0,0,0,.08);
+  color:#0b1220;
+}
+.iwp-theme-dark .iwp-note{ color:#e5e7eb; }
+
+/* Styles: postit, minimal, bubble */
+.iwp-note.postit{ background: var(--iwp-postit, #fff59d); }
+.iwp-note.minimal{ background: transparent; border: 0; box-shadow:none; }
+.iwp-note.minimal .iwp-body{ background: rgba(0,0,0,.08); padding:4px 6px; border-radius:6px; display:inline-block; }
+.iwp-theme-dark .iwp-note.minimal .iwp-body{ background: rgba(255,255,255,.12); }
+.iwp-note.bubble{ background: #ffffff; border: 1px solid rgba(0,0,0,.06); }
+.iwp-theme-dark .iwp-note.bubble{ background:#0f172a; border-color:#1f2937; }
+
+.iwp-meta{ font-size:.72rem; opacity:.75; margin-bottom:4px; }
+.iwp-body{ white-space: pre-wrap; word-break: break-word; font-size: var(--iwp-size, 18px); }
+
+.iwp-note.drag{ cursor:grabbing; opacity:.95; box-shadow: 0 16px 40px rgba(0,0,0,.2); }
+.iwp-resize{ position:absolute; right:-6px; bottom:-6px; width:12px; height:12px; border-radius:50%; background:#2563eb; box-shadow:0 2px 6px rgba(0,0,0,.25); cursor:nwse-resize; }
+.iwp-theme-dark .iwp-resize{ background:#60a5fa; }
+
+/* Inline editor */
+.iwp-editor{
+  position:absolute; min-width:160px; min-height:60px; padding:10px 12px; border-radius:12px;
+  outline:2px dashed rgba(0,0,0,.3); background: rgba(0,0,0,.06);
+}
+.iwp-theme-dark .iwp-editor{ outline-color: rgba(255,255,255,.4); background: rgba(255,255,255,.08); }
+.iwp-editor[contenteditable=\"true\"]:empty:before{ content: attr(data-placeholder); color:#6b7280; }
+
+/* Mobile tweaks */
+@media (max-width: 768px){
+  .iwp-toolbar{ right:8px; top:8px; gap:.25rem; }
+  .iwp-btn{ padding:.35rem .45rem; }
+}
