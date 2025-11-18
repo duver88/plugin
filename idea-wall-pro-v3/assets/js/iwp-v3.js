@@ -199,7 +199,7 @@
     const bgi = root.dataset.bgi || '';
     const [items, setItems] = useState([]);
     const [theme, setTheme] = useState(root.classList.contains('iwp-theme-dark')?'dark':(root.classList.contains('iwp-theme-light')?'light':'auto'));
-    const [color, setColor] = useState('#fff59d');
+    const [color, setColor] = useState('#ffffff');
     const [font, setFont] = useState('system-ui');
     const [size, setSize] = useState(25);
     const [style, setStyle] = useState('postit');
