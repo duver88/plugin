@@ -11,8 +11,15 @@
   const { useEffect, useRef, useState } = React;
 
   // Pan & Zoom controller (mouse + touch)
-  function usePanZoom(stageRef){
-    const [state, setState] = useState({scale:1, tx:0, ty:0});
+  function usePanZoom(stageRef, stageWidth, stageHeight){
+    const [state, setState] = useState(()=>{
+      // Calculate initial centered position
+      const containerWidth = window.innerWidth;
+      const containerHeight = window.innerHeight - 100; // Account for toolbar and margins
+      const tx = Math.max(0, (containerWidth - stageWidth) / 2);
+      const ty = Math.max(0, (containerHeight - stageHeight) / 2);
+      return {scale:1, tx, ty};
+    });
     useEffect(()=>{
       const container = stageRef.current?.parentElement; if (!container) return;
       let dragging=false, sx=0, sy=0, stx=0, sty=0, pinch=false, sd=0, ss=1;
@@ -25,21 +32,25 @@
       };
       const onDown = (e)=>{
         if (e.target.closest('.iwp-note') || e.target.closest('.iwp-editor') || e.target.closest('.iwp-toolbar')) return;
+        if (e.touches && e.touches.length > 1) return; // Skip if multi-touch (for pinch)
         dragging=true; pinch=false;
         sx = (e.touches?e.touches[0].clientX:e.clientX);
         sy = (e.touches?e.touches[0].clientY:e.clientY);
         stx = state.tx; sty = state.ty;
+        if (e.cancelable) e.preventDefault();
       };
       const onMove = (e)=>{
         if (e.touches && e.touches.length===2){ // pinch
+          e.preventDefault();
           const [a,b] = e.touches;
           const d = Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY);
-          if (!pinch){ pinch=true; sd=d; ss=state.scale; }
+          if (!pinch){ pinch=true; sd=d; ss=state.scale; dragging=false; }
           const ns = Math.max(0.4, Math.min( (d/sd)*ss , 3));
           setState(s=>({...s, scale: ns}));
           return;
         }
         if(!dragging) return;
+        if (e.cancelable) e.preventDefault();
         const cx = (e.touches?e.touches[0].clientX:e.clientX);
         const cy = (e.touches?e.touches[0].clientY:e.clientY);
         setState(s=>({...s, tx: stx + (cx-sx), ty: sty + (cy-sy)}));
@@ -76,8 +87,8 @@
         h('option',{value:'"Courier New", monospace'},'Courier'),
         h('option',{value:'Impact, sans-serif'},'Impact'),
       ),
-      h('select', {className:'iwp-select', value:size, onChange:e=>setSize(parseInt(e.target.value,10)||18), title:'Tamaño'},
-        [14,16,18,20,22,24,28,32].map(n=>h('option',{key:n,value:n}, n+'px'))
+      h('select', {className:'iwp-select', value:size, onChange:e=>setSize(parseInt(e.target.value,10)||25), title:'Tamaño'},
+        [14,16,18,20,22,24,25,28,32].map(n=>h('option',{key:n,value:n}, n+'px'))
       ),
       h('select', {className:'iwp-select', value:style, onChange:e=>setStyle(e.target.value), title:'Estilo'},
         h('option',{value:'postit'},'Post-it'),
@@ -188,15 +199,15 @@
     const bgi = root.dataset.bgi || '';
     const [items, setItems] = useState([]);
     const [theme, setTheme] = useState(root.classList.contains('iwp-theme-dark')?'dark':(root.classList.contains('iwp-theme-light')?'light':'auto'));
-    const [color, setColor] = useState('#fff59d');
+    const [color, setColor] = useState('#ffffff');
     const [font, setFont] = useState('system-ui');
-    const [size, setSize] = useState(18);
+    const [size, setSize] = useState(25);
     const [style, setStyle] = useState('postit');
     const isAdmin = !!IWPV3.isAdmin;
 
     const containerRef = useRef(null);
     const stageRef = useRef(null);
-    const pz = usePanZoom(stageRef);
+    const pz = usePanZoom(stageRef, width, height);
 
     const load = ()=> ajax('iwp_v3_list', {wall: wallId}).then(res=>{ if(res && res.success) setItems(res.data.items||[]); });
     useEffect(load, [wallId]);
